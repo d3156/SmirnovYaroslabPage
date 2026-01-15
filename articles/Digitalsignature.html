@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Аудит ЭЦП в платёжном API: типовые ошибки и модель угроз</title>
+    <meta name="description"
+        content="Техническая статья: аудит цифровой подписи (ЭЦП) в платёжных API на примере схем подписания запросов FreeKassa (SCI и API v1). Ошибки: MD5, слабый ключ, подпись в URL и риск подделки уведомлений." />
+    <meta name="theme-color" content="#0b1220" />
+
+    <style>
+        :root {
+            --bg0: #070b16;
+            --bg1: #0b1220;
+            --card: #0f1a33cc;
+            --text: #e9eefc;
+            --muted: #aab6da;
+            --line: #24345f;
+            --accent: #7c5cff;
+            --accent2: #22d3ee;
+            --good: #34d399;
+            --shadow: 0 18px 60px rgba(0, 0, 0, .45);
+            --radius: 18px;
+            --w: 980px;
+            --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Noto Sans", Arial;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: var(--sans);
+            color: var(--text);
+            background:
+                radial-gradient(1200px 600px at 70% 10%, rgba(124, 92, 255, .28), transparent 55%),
+                radial-gradient(900px 500px at 15% 30%, rgba(34, 211, 238, .18), transparent 55%),
+                radial-gradient(900px 650px at 70% 80%, rgba(52, 211, 153, .12), transparent 60%),
+                linear-gradient(180deg, var(--bg0), var(--bg1));
+            min-height: 100svh;
+            overflow-x: hidden;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .wrap {
+            width: min(var(--w), calc(100% - 40px));
+            margin: 0 auto;
+        }
+
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            backdrop-filter: blur(10px);
+            background: linear-gradient(180deg, rgba(7, 11, 22, .85), rgba(7, 11, 22, .55));
+            border-bottom: 1px solid rgba(36, 52, 95, .6);
+            left: 0;
+            right: 0;
+            width: 100%;
+        }
+
+        .nav .row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            gap: 12px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            letter-spacing: .2px;
+        }
+
+        .logo {
+            width: 34px;
+            height: 34px;
+            border-radius: 12px;
+            background: conic-gradient(from 210deg, var(--accent), var(--accent2), var(--good), var(--accent));
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, .08) inset;
+        }
+
+        .menu {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .chip {
+            padding: 9px 12px;
+            border: 1px solid rgba(36, 52, 95, .9);
+            background: rgba(15, 26, 51, .55);
+            border-radius: 999px;
+            color: var(--muted);
+            transition: .2s ease;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .chip:hover {
+            transform: translateY(-1px);
+            border-color: rgba(124, 92, 255, .9);
+            color: var(--text);
+        }
+
+        @media (max-width: 520px) {
+            .menu {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                justify-content: flex-start;
+                gap: 8px;
+            }
+
+            .menu::-webkit-scrollbar {
+                height: 0;
+            }
+        }
+
+        .card {
+            background: rgba(15, 26, 51, .55);
+            border: 1px solid rgba(36, 52, 95, .85);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        header {
+            padding: 22px 0 10px;
+        }
+
+        .hero {
+            padding: 22px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero:before {
+            content: "";
+            position: absolute;
+            inset: -2px;
+            background:
+                radial-gradient(700px 260px at 28% 0%, rgba(124, 92, 255, .28), transparent 60%),
+                radial-gradient(520px 240px at 92% 22%, rgba(34, 211, 238, .20), transparent 62%),
+                radial-gradient(520px 260px at 70% 92%, rgba(52, 211, 153, .10), transparent 65%);
+            pointer-events: none;
+        }
+
+        .hero>* {
+            position: relative;
+        }
+
+        .kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--mono);
+            color: var(--muted);
+            font-size: 13px;
+            padding: 8px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(36, 52, 95, .85);
+            background: rgba(7, 11, 22, .35);
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: var(--good);
+            box-shadow: 0 0 0 6px rgba(52, 211, 153, .12);
+        }
+
+        h1 {
+            margin: 14px 0 10px;
+            font-size: clamp(24px, 4vw, 38px);
+            line-height: 1.12;
+            letter-spacing: -.4px;
+        }
+
+        .subtitle {
+            margin: 0;
+            color: var(--muted);
+            font-size: 15.5px;
+            line-height: 1.65;
+            max-width: 72ch;
+        }
+
+        main {
+            padding: 14px 0 56px;
+        }
+
+        section {
+            margin-top: 14px;
+        }
+
+        .box {
+            padding: 18px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 12px;
+            margin: 2px 0 10px;
+        }
+
+        .section-title h2 {
+            margin: 0;
+            font-size: 18px;
+            letter-spacing: .2px;
+        }
+
+        .section-title p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 13px;
+            font-family: var(--mono);
+        }
+
+        .list {
+            margin: 0;
+            padding-left: 18px;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .pillset {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .pill {
+            font-size: 13px;
+            padding: 8px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(36, 52, 95, .85);
+            background: rgba(7, 11, 22, .35);
+            color: var(--muted);
+            white-space: nowrap;
+        }
+
+        .callout {
+            padding: 14px;
+            border-radius: 16px;
+            border: 1px solid rgba(36, 52, 95, .85);
+            background: rgba(7, 11, 22, .35);
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .callout b {
+            color: var(--text);
+        }
+
+        pre {
+            margin: 12px 0 0;
+            padding: 14px;
+            border-radius: 16px;
+            border: 1px solid rgba(36, 52, 95, .85);
+            background: rgba(7, 11, 22, .55);
+            overflow: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
+        }
+
+        code {
+            font-family: var(--mono);
+            font-size: 12.8px;
+            color: #dbe6ff;
+        }
+
+        .note {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.65;
+            margin-top: 10px;
+        }
+
+        footer {
+            padding: 22px 0 30px;
+            color: var(--muted);
+        }
+
+        .foot {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            border-top: 1px solid rgba(36, 52, 95, .6);
+            padding-top: 16px;
+        }
+
+        .mono {
+            font-family: var(--mono);
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="nav">
+        <div class="wrap">
+            <div class="row">
+                <div class="brand">
+                    <div class="logo" aria-hidden="true"></div>
+                    <div>Смирнов Ярослав</div>
+                </div>
+                <nav class="menu" aria-label="Навигация статьи">
+                    <a class="chip" href="../index.html">← На главную</a>
+                    <a class="chip" href="#threats">Угрозы</a>
+                    <a class="chip" href="#api1">SCI / MD5</a>
+                    <a class="chip" href="#api2">API v1 / HMAC</a>
+                    <a class="chip" href="#rec">Рекомендации</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <header class="wrap">
+        <div class="card hero">
+            <div class="kicker"><span class="dot" aria-hidden="true"></span><span class="mono">Техническая статья •
+                    Secure code review</span></div>
+            <h1>Аудит ЭЦП в платёжном API: типовые ошибки реализации</h1>
+            <p class="subtitle">
+                Разбор схем подписания запросов в платёжном API на примере FreeKassa: SCI (подпись на MD5) и API v1
+                (HMAC-SHA256). Источник требований/примеры: официальная документация сервиса.
+                <span class="mono"><a href="https://docs.freekassa.net/" target="_blank"
+                        rel="noreferrer">docs.freekassa.net</a></span>
+            </p>
+
+            <div class="pillset" style="margin-top:14px;">
+                <span class="pill">ЭЦП / подписи запросов</span>
+                <span class="pill">MD5</span>
+                <span class="pill">HMAC-SHA256</span>
+                <span class="pill">Webhook / уведомления</span>
+                <span class="pill">Модель угроз</span>
+            </div>
+
+            <p class="note">
+                Материал учебный: описывает уязвимые паттерны проектирования и реализации, без публикации секретов,
+                ключей, эксплуатационных скриптов и конкретных шагов атаки.
+            </p>
+        </div>
+        <section class="card box" id="tldr">
+            <div class="section-title">
+                <h2>TL;DR</h2>
+            </div>
+
+            <div class="callout">
+                <ul class="list" style="margin:0;">
+                    <li><b>SCI (MD5):</b> устаревший криптопримитив + высокий риск компрометации подписи при слабом
+                        секрете и утечках параметров.</li>
+                    <li><b>API v1 (HMAC-SHA256):</b> правильный выбор алгоритма, но стойкость упирается в
+                        качество/энтропию ключа и корректную каноникализацию данных.</li>
+                    <li><b>Webhook:</b> одной подписи мало — нужны проверки бизнес‑инвариантов и защита от повтора
+                        (nonce/время/идемпотентность).</li>
+                </ul>
+            </div>
+
+            <div class="pillset" style="margin-top:12px;">
+                <a class="pill chip" href="#api1">Перейти к SCI/MD5</a>
+                <a class="pill chip" href="#api2">Перейти к API v1/HMAC</a>
+                <a class="pill chip" href="#rec">Перейти к рекомендациям</a>
+            </div>
+        </section>
+
+    </header>
+
+    <main class="wrap">
+        <section class="card box" id="threats">
+            <div class="section-title">
+                <h2>Модель угроз</h2>
+            </div>
+            <ul class="list">
+                <li>Цель подписи — доказать, что параметры платежа/уведомления сформированы доверенной стороной и не
+                    изменены по дороге.</li>
+                <li>Злоумышленник обычно имеет доступ к URL платежа/параметрам в браузере и может перехватывать входящие
+                    уведомления (например, через логи, прокси, утечки в инфраструктуре).</li>
+                <li>Критичный риск: возможность подделать оплату или “подтвердить” оплату, которой не было, если подпись
+                    можно вычислить без секрета.</li>
+            </ul>
+            <div class="callout" style="margin-top:12px;">
+                <b>Ключевой принцип:</b> секрет, на котором держится подпись, не должен восстанавливаться по наблюдаемым
+                данным, а проверка уведомлений должна быть устойчива к повтору/подмене.
+            </div>
+        </section>
+
+        <section class="card box" id="api1">
+            <div class="section-title">
+                <h2>SCI / подпись на MD5</h2>
+            </div>
+
+            <p class="note" style="margin:0 0 8px;">
+                В документации SCI описана подпись параметров платежной формы как MD5 от конкатенации полей
+                (магазин/сумма/секрет/валюта/заказ), а также подпись уведомления (Result URL) как MD5 от
+                (магазин/сумма/секрет2/заказ). Это прямо следует из официальных примеров и описаний подписи. <span
+                    class="mono"><a href="https://docs.freekassa.net/" target="_blank"
+                        rel="noreferrer">Источник</a></span>
+            </p>
+
+            <div class="callout">
+                <b>Риск №1:</b> MD5 считается устаревшим для криптографических целей; при слабом секрете возможен
+                подбор/компрометация подписи (особенно если секрет “человеческий”).<br />
+                <b>Риск №2:</b> подпись передаётся как параметр URL платежа (GET), что повышает шанс утечки через логи,
+                историю браузера, referrer и сторонние системы мониторинга.
+            </div>
+
+            <pre><code>// Паттерн из документации (упрощённо):
+sign = md5(merchant_id + ":" + amount + ":" + secret + ":" + currency + ":" + order_id)
+webhook_sign = md5(merchant_id + ":" + amount + ":" + secret2 + ":" + order_id)</code></pre>
+
+            <div class="callout" style="margin-top:12px;">
+                <b>Почему это важно:</b> если злоумышленник сможет восстановить секрет (или найти способ обхода
+                проверки), он получит возможность формировать валидные ссылки на оплату и/или подделывать уведомления об
+                оплате.
+            </div>
+        </section>
+
+        <section class="card box" id="api2">
+            <div class="section-title">
+                <h2>API v1 / HMAC-SHA256</h2>
+            </div>
+
+            <p class="note" style="margin:0 0 8px;">
+                В документации JSON API указано: “сортируем параметры по ключам, соединяем значения через ‘|’, затем
+                считаем HMAC-SHA256 с использованием API-ключа” — пример приводится напрямую. <span class="mono"><a
+                        href="https://docs.freekassa.net/" target="_blank" rel="noreferrer">Источник</a></span>
+            </p>
+
+            <pre><code>// Пример паттерна из документации (PHP):
+ksort(data)
+signature = HMAC_SHA256( implode("|", data_values), api_key )</code></pre>
+
+            <div class="callout" style="margin-top:12px;">
+                <b>Нормально:</b> переход на HMAC-SHA256 — правильное направление, так как HMAC устойчив при корректном
+                выборе секретного ключа.<br />
+                <b>Слабое место реализации:</b> если в качестве “api_key” фактически используется короткий ключ
+                (например, 32-битное значение), представленный в виде hex-строки, то эффективная энтропия ключа остаётся
+                низкой, несмотря на то что “строка выглядит длинной”.
+            </div>
+
+            <ul class="list" style="margin-top:10px;">
+                <li>HMAC сам по себе не “добавляет” стойкости, если секрет слишком короткий.</li>
+                <li>Опасный симптом: ключ выглядит как hex-строка фиксированной длины, но происхождение/генерация даёт
+                    слишком маленькое пространство перебора.</li>
+                <li>Дополнительный риск: в подпись включаются только значения, без имён ключей — это усложняет защиту от
+                    некоторых классов коллизий представления (когда разные наборы полей дают одинаковую строку).</li>
+            </ul>
+        </section>
+
+        <section class="card box" id="rec">
+            <div class="section-title">
+                <h2>Рекомендации</h2>
+            </div>
+
+            <ul class="list">
+                <li><b>Для подписи запросов:</b> использовать HMAC-SHA256/512 с криптографически случайным секретом
+                    достаточной длины (не “короткий int/32-bit”, не “пароль”).</li>
+                <li><b>Для каноникализации:</b> подписывать пары <span class="mono">key=value</span>, а не только
+                    значения, и однозначно определять кодировку/escape, чтобы исключить неоднозначности.</li>
+                <li><b>Для webhook:</b> проверять не только подпись, но и “свежесть” события (nonce/временная метка),
+                    защищаться от повтора, сверять сумму/валюту/ID заказа и статус.</li>
+                <li><b>Для транспорта:</b> избегать размещения подписи и чувствительных параметров в URL, где это
+                    возможно; контролировать логирование и referrer-политики.</li>
+                <li><b>Для операционной безопасности:</b> хранить секреты вне кода (env/secret storage), ротировать
+                    ключи и иметь процедуру отзыва.</li>
+            </ul>
+
+            <div class="callout" style="margin-top:12px;">
+                <b>Практический чек-лист аудита подписи:</b>
+                1) криптоалгоритм и каноникализация, 2) длина/генерация секрета, 3) где “живёт” подпись
+                (URL/headers/body),
+                4) защита webhook от повтора, 5) проверка бизнес-инвариантов (orderId/amount/currency), 6) логирование и
+                обработка ошибок.
+            </div>
+        </section>
+
+        <section class="card box">
+            <div class="section-title">
+                <h2>Ссылки</h2>
+            </div>
+            <ul class="list">
+                <li>
+                    Документация FreeKassa: <span class="mono"><a href="https://docs.freekassa.net/" target="_blank"
+                            rel="noreferrer">https://docs.freekassa.net/</a></span>
+                </li>
+            </ul>
+        </section>
+
+        <section class="card box" id="more">
+            <div class="section-title">
+                <h2>Другие статьи</h2>
+            </div>
+            <div id="more-articles" class="grid"></div>
+        </section>
+
+
+    </main>
+
+    <footer class="wrap">
+        <div class="foot">
+            <div class="mono">© <span id="y"></span> Смирнов Ярослав</div>
+            <div class="mono"><a class="chip" href="#top">Наверх</a></div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById("y").textContent = new Date().getFullYear();
+    </script>
+    <script>
+  async function loadMoreArticles(){
+    const host = document.getElementById("more-articles");
+    if (!host) return;
+
+    const current = new URL(location.href).pathname.split("/").pop(); // Digitalsignature.html
+
+    try{
+      const res = await fetch("./index.json", { cache: "no-store" });
+      if (!res.ok) throw new Error("index.json not found");
+      const items = await res.json();
+
+      const filtered = (items || [])
+        .filter(p => p && p.url && !p.url.endsWith(current))
+        .sort((a,b) => String(b.date||"").localeCompare(String(a.date||"")));
+
+      if (!filtered.length){
+        host.innerHTML = '<div class="callout">Пока нет других статей.</div>';
+        return;
+      }
+
+      host.innerHTML = filtered.map(p => `
+        <a class="card box" href="${p.url}" style="display:block; padding:16px;">
+          <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+            <b style="font-size:15px;">${escapeHtml(p.title || "Без названия")}</b>
+            ${p.date ? `<span class="mono" style="color:var(--muted); font-size:12.5px;">${escapeHtml(p.date)}</span>` : ""}
+          </div>
+          ${Array.isArray(p.tags) && p.tags.length ? `
+            <div class="pillset" style="margin-top:10px;">
+              ${p.tags.slice(0,4).map(t => `<span class="pill">${escapeHtml(t)}</span>`).join("")}
+            </div>` : ""
+          }
+        </a>
+      `).join("");
+
+    }catch(e){
+      host.innerHTML = '<div class="callout">Не удалось загрузить список статей. Проверь, что <span class="mono">articles/index.json</span> существует.</div>';
+    }
+  }
+
+  function escapeHtml(s=""){
+    return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+  }
+
+  loadMoreArticles();
+</script>
+
+</body>
+
+</html>
