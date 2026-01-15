@@ -315,6 +315,22 @@
             font-family: var(--mono);
         }
 
+        .more-articles {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+
+        @media (min-width: 860px) {
+            .more-articles {
+                grid-template-columns: 1fr 1fr;
+                gap: 14px;
+            }
+        }
+
+        .more-articles>a {
+            box-shadow: 0 18px 60px rgba(0, 0, 0, .35);
+        }
     </style>
 </head>
 
@@ -512,7 +528,7 @@ signature = HMAC_SHA256( implode("|", data_values), api_key )</code></pre>
             <div class="section-title">
                 <h2>Другие статьи</h2>
             </div>
-            <div id="more-articles" class="grid"></div>
+            <div id="more-articles" class="more-articles"></div>
         </section>
 
 
@@ -529,51 +545,50 @@ signature = HMAC_SHA256( implode("|", data_values), api_key )</code></pre>
         document.getElementById("y").textContent = new Date().getFullYear();
     </script>
     <script>
-  async function loadMoreArticles(){
-    const host = document.getElementById("more-articles");
-    if (!host) return;
+        async function loadMoreArticles() {
+            const host = document.getElementById("more-articles");
+            if (!host) return;
 
-    const current = new URL(location.href).pathname.split("/").pop(); // Digitalsignature.html
+            const current = new URL(location.href).pathname.split("/").pop(); // Digitalsignature.html
 
-    try{
-      const res = await fetch("./index.json", { cache: "no-store" });
-      if (!res.ok) throw new Error("index.json not found");
-      const items = await res.json();
+            try {
+                const res = await fetch("./index.json", { cache: "no-store" });
+                if (!res.ok) throw new Error("index.json not found");
+                const items = await res.json();
 
-      const filtered = (items || [])
-        .filter(p => p && p.url && !p.url.endsWith(current))
-        .sort((a,b) => String(b.date||"").localeCompare(String(a.date||"")));
+                const filtered = (items || [])
+                    .filter(p => p && p.url && !p.url.endsWith(current))
+                    .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
 
-      if (!filtered.length){
-        host.innerHTML = '<div class="callout">Пока нет других статей.</div>';
-        return;
-      }
+                if (!filtered.length) {
+                    host.innerHTML = '<div class="callout">Пока нет других статей.</div>';
+                    return;
+                }
 
-      host.innerHTML = filtered.map(p => `
+                host.innerHTML = filtered.map(p => `
         <a class="card box" href="${p.url}" style="display:block; padding:16px;">
           <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">
             <b style="font-size:15px;">${escapeHtml(p.title || "Без названия")}</b>
-            ${p.date ? `<span class="mono" style="color:var(--muted); font-size:12.5px;">${escapeHtml(p.date)}</span>` : ""}
           </div>
           ${Array.isArray(p.tags) && p.tags.length ? `
             <div class="pillset" style="margin-top:10px;">
-              ${p.tags.slice(0,4).map(t => `<span class="pill">${escapeHtml(t)}</span>`).join("")}
+              ${p.tags.slice(0, 4).map(t => `<span class="pill">${escapeHtml(t)}</span>`).join("")}
             </div>` : ""
-          }
+                    }
         </a>
       `).join("");
 
-    }catch(e){
-      host.innerHTML = '<div class="callout">Не удалось загрузить список статей. Проверь, что <span class="mono">articles/index.json</span> существует.</div>';
-    }
-  }
+            } catch (e) {
+                host.innerHTML = '<div class="callout">Не удалось загрузить список статей. Проверь, что <span class="mono">articles/index.json</span> существует.</div>';
+            }
+        }
 
-  function escapeHtml(s=""){
-    return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
-  }
+        function escapeHtml(s = "") {
+            return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+        }
 
-  loadMoreArticles();
-</script>
+        loadMoreArticles();
+    </script>
 
 </body>
 
