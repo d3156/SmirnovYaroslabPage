@@ -9,10 +9,11 @@
     content="Техническая статья: почему разработчику важно писать инструменты для ускорения своей работы. Пример: утилита Integerfinder для поиска чисел в бинарных данных при реверс-инжиниринге протокола." />
   <meta name="theme-color" content="#0b1220" />
   <link rel="stylesheet" href="./../assets/css/base.css">
-  <link rel="stylesheet" href="./../assets/css/artilces.css">
+  <link rel="stylesheet" href="./../assets/css/articles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
   <style> </style>
 </head>
+<script defer src="../assets/js/articles.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
 <script>hljs.highlightAll();</script>
 <body>
@@ -152,54 +153,8 @@
       <div class="mono"><a class="chip" href="#top">Наверх</a></div>
     </div>
   </footer>
-
   <script>
     document.getElementById("y").textContent = new Date().getFullYear();
-
-    function escapeHtml(s = "") {
-      return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-    }
-
-    async function loadMoreArticles() {
-      const host = document.getElementById("more-articles");
-      if (!host) return;
-
-      const current = new URL(location.href).pathname.split("/").pop(); // Tooling.html
-
-      try {
-        const res = await fetch("./index.json", { cache: "no-store" });
-        if (!res.ok) throw new Error("index.json not found");
-        const items = await res.json();
-
-        const filtered = (items || [])
-          .filter(p => p && p.url && !p.url.endsWith(current))
-          .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
-
-        if (!filtered.length) {
-          host.innerHTML = '<div class="callout">Пока нет других статей.</div>';
-          return;
-        }
-
-        host.innerHTML = filtered.map(p => `
-          <a class="card box" href="${p.url}" style="display:block; padding:16px;">
-            <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">
-              <b style="font-size:15px;">${escapeHtml(p.title || "Без названия")}</b>
-              ${p.date ? `<span class="mono" style="color:var(--muted); font-size:12.5px;">${escapeHtml(p.date)}</span>` : ""}
-            </div>
-            ${Array.isArray(p.tags) && p.tags.length ? `
-              <div class="pillset" style="margin-top:10px;">
-                ${p.tags.slice(0, 4).map(t => `<span class="pill">${escapeHtml(t)}</span>`).join("")}
-              </div>` : ""
-          }
-          </a>
-        `).join("");
-
-      } catch (e) {
-        host.innerHTML = '<div class="callout">Не удалось загрузить список статей. Проверь, что <span class="mono">articles/index.json</span> существует и сайт открыт по HTTP(S).</div>';
-      }
-    }
-
-    loadMoreArticles();
   </script>
 </body>
 

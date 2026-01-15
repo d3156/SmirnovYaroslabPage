@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Плагинная архитектура: гибкие приложения на C++ (PluginCore)</title>
+    <meta name="description"
+        content="Статья о плагинной архитектуре: расширяемость, динамическая сборка функциональности, ABI. Пример — проект PluginCore." />
+    <meta name="theme-color" content="#0b1220" />
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/articles.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+
+    <style>
+        pre code {
+            color: inherit;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="nav">
+        <div class="wrap">
+            <div class="row">
+                <div class="brand">
+                    <div class="logo" aria-hidden="true"></div>
+                    <div>Смирнов Ярослав</div>
+                </div>
+                <nav class="menu" aria-label="Навигация статьи">
+                    <a class="chip" href="../index.html">← На главную</a>
+                    <a class="chip" href="#tldr">TL;DR</a>
+                    <a class="chip" href="#why">Зачем плагины</a>
+                    <a class="chip" href="#how">Как устроено</a>
+                    <a class="chip" href="#abi">ABI</a>
+                    <a class="chip" href="#models">Модели</a>
+                    <a class="chip" href="#status">Статус</a>
+                    <a class="chip" href="#more">Другие статьи</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <header class="wrap" id="top">
+        <div class="card hero">
+            <div class="kicker"><span class="dot" aria-hidden="true"></span><span class="mono">Техническая статья •
+                    Plugin architecture</span></div>
+            <h1>Плагинная архитектура: гибкие приложения, расширяемые функциональностью</h1>
+
+            <p class="subtitle">
+                Плагинная архитектура позволяет строить приложение как “ядро + набор модулей”, где основная
+                функциональность поставляется отдельно: её можно добавлять, обновлять и отключать без перекомпиляции
+                всего проекта.
+            </p>
+
+            <div class="pillset" style="margin-top:14px;">
+                <span class="pill">C++</span>
+                <span class="pill">Plugins</span>
+                <span class="pill">ABI</span>
+                <span class="pill">Shared libraries</span>
+                <span class="pill">CMake</span>
+            </div>
+
+            <p class="note">
+                Пример из практики: <span class="mono">PluginCore</span> — библиотека на C++ для создания приложения,
+                полностью основанного на плагинах.
+                Репозиторий: <span class="mono"><a href="https://github.com/d3156/PluginCore" target="_blank"
+                        rel="noreferrer">github.com/d3156/PluginCore</a></span>
+            </p>
+        </div>
+    </header>
+
+    <main class="wrap">
+        <section class="card box" id="tldr">
+            <div class="section-title">
+                <h2>TL;DR</h2>
+            </div>
+
+            <div class="callout">
+                <ul class="list" style="margin:0;">
+                    <li><b>Плагины</b> дают расширяемость: функциональность поставляется отдельными динамическими
+                        библиотеками.</li>
+                    <li>Ядро берёт на себя загрузку, жизненный цикл и контракт (ABI), а модули — бизнес‑логику.</li>
+                    <li>В PluginCore плагины общаются через “модели” (реестр зависимостей), а точки входа фиксированы:
+                        <span class="mono">create_plugin/destroy_plugin</span>.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="card box" id="why">
+            <div class="section-title">
+                <h2>Зачем нужна архитектура</h2>
+            </div>
+
+            <ul class="list">
+                <li><b>Гибкость продукта:</b> можно поставлять разные сборки (наборы модулей) под разных клиентов и
+                    окружения, меняя только каталог плагинов.</li>
+                <li><b>Снижение связанности:</b> ядро минимально, а большие части логики изолированы в модулях с
+                    понятными контрактами.</li>
+                <li><b>Масштабирование команды:</b> плагины удобно разрабатывать параллельно, когда есть стабильный
+                    интерфейс ядра.</li>
+            </ul>
+
+            <div class="callout" style="margin-top:12px;">
+                Плагинная модель особенно хороша для утилит, агентских приложений, систем мониторинга/безопасности, где
+                набор функций меняется со временем и зависит от окружения.
+            </div>
+        </section>
+
+        <section class="card box" id="how">
+            <div class="section-title">
+                <h2>Как устроен PluginCore</h2>
+            </div>
+
+            <p class="note" style="margin:0;">
+                Идея простая: хост создаёт объект ядра, а дальше “система живёт” за счёт плагинов.
+            </p>
+
+            <pre><code class="language-cpp">#include &lt;PluginCore/Core.hpp&gt;
+
+int main(int argc, char* argv[]) {
+    PluginCore::Core core(argc, argv);
+    return 0;
+}</code></pre>
+
+            <div class="callout" style="margin-top:12px;">
+                <b>Порядок инициализации:</b>
+                <ul class="list" style="margin:8px 0 0;">
+                    <li>Ядро загружает плагины из <span class="mono">./Plugins</span> или из каталога, заданного
+                        переменной окружения <span class="mono">PLUGINS_DIR</span>.</li>
+                    <li>У каждого плагина вызывается <span class="mono">registerArgs()</span>, затем ядро парсит
+                        аргументы командной строки, затем вызывает <span class="mono">registerModels()</span>.</li>
+                    <li>После регистрации моделей вызывается <span class="mono">postInit()</span> у всех моделей, и
+                        только потом <span class="mono">postInit()</span> у всех плагинов.</li>
+                </ul>
+            </div>
+
+            <p class="note">
+                Такой порядок полезен тем, что аргументы доступны до создания зависимостей, а “поздняя инициализация”
+                позволяет стартовать потоки/таски уже после того, как все модели гарантированно существуют.
+            </p>
+        </section>
+
+        <section class="card box" id="abi">
+            <div class="section-title">
+                <h2>ABI и точки входа</h2>
+            </div>
+
+            <div class="callout">
+                В плагинной архитектуре критично зафиксировать контракт загрузки: ядро должно знать, как создать объект
+                плагина и как корректно его уничтожить, не полагаясь на “совпадение” настроек компиляции и стандартных
+                библиотек.
+            </div>
+
+            <pre><code class="language-cpp">// Плагин обязан экспортировать C-ABI функции с точными именами:
+extern "C" PluginCore::IPlugin* create_plugin();
+extern "C" void destroy_plugin(PluginCore::IPlugin*);
+
+// Важно: уничтожение идёт через destroy_plugin(), а не через delete в хосте.</code></pre>
+
+            <p class="note">
+                Выделение памяти и освобождение должны происходить согласованно: такой явный destroy‑хук — простой и
+                практичный способ снизить риск проблем на границе модуль/хост.
+            </p>
+        </section>
+
+        <section class="card box" id="models">
+            <div class="section-title">
+                <h2>Модели и обмен данными</h2>
+            </div>
+
+            <p class="note" style="margin:0;">
+                В PluginCore плагины обмениваются функциональностью через модели (<span
+                    class="mono">PluginCore::IModel</span>) и их реестр <span class="mono">ModelsStorage</span>: это
+                похоже на DI‑контейнер/реестр сервисов, но с явным контролем порядка инициализации/удаления.
+            </p>
+
+            <div class="callout" style="margin-top:12px;">
+                <b>Практические правила:</b>
+                <ul class="list" style="margin:8px 0 0;">
+                    <li>Модель имеет пустой конструктор, а настоящая инициализация выполняется в <span
+                            class="mono">init()</span>.</li>
+                    <li>Порядок удаления контролируется <span class="mono">deleteOrder()</span>: меньшие значения
+                        удаляются раньше (поддерживаются отрицательные).</li>
+                    <li>Есть удобный макрос регистрации/получения: <span class="mono">RegisterModel(name, new_model,
+                            T)</span> (вернёт существующую или зарегистрирует новую).</li>
+                </ul>
+            </div>
+
+            <pre><code class="language-cpp">// Каркас плагина (минимум)
+#include &lt;PluginCore/IPlugin.hpp&gt;
+#include &lt;PluginCore/ModelsStorage.hpp&gt;
+
+class MyPlugin final : public PluginCore::IPlugin {
+public:
+    void registerModels(PluginCore::ModelsStorage& models) override {
+        // Регистрируй свои модели или получай чужие из реестра
+    }
+};
+
+extern "C" PluginCore::IPlugin* create_plugin() { return new MyPlugin(); }
+extern "C" void destroy_plugin(PluginCore::IPlugin* p) { delete p; }</code></pre>
+        </section>
+
+        <section class="card box" id="status">
+            <div class="section-title">
+                <h2>Статус проекта</h2>
+            </div>
+
+            <div class="callout">
+                Проект активно развивается; в ближайшем будущем планируется первый релиз, после которого интерфейсы
+                будут стабилизироваться и появится больше примеров плагинов “из коробки”.
+            </div>
+
+            <p class="note">
+                Актуальное состояние и исходники: <span class="mono"><a href="https://github.com/d3156/PluginCore"
+                        target="_blank" rel="noreferrer">github.com/d3156/PluginCore</a></span>
+            </p>
+        </section>
+
+        <section class="card box" id="more">
+            <div class="section-title">
+                <h2>Другие статьи</h2>
+            </div>
+            <div id="more-articles" class="more-articles"></div>
+            <p class="note" style="margin-bottom:0;">
+                Список строится из <span class="mono">articles/index.json</span>.
+            </p>
+        </section>
+    </main>
+
+    <footer class="wrap">
+        <div class="foot">
+            <div class="mono">© <span id="y"></span> Смирнов Ярослав</div>
+            <div class="mono"><a class="chip" href="#top">Наверх</a></div>
+        </div>
+    </footer>
+    <script defer src="../assets/js/articles.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script>
+        document.getElementById("y").textContent = new Date().getFullYear();
+    </script>
+</body>
+
+</html>

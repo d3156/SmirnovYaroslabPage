@@ -1,6 +1,6 @@
 [
   { "title": "Аудит ЭЦП: типовые ошибки реализации", "url": "./Digitalsignature.html", "tags": ["ЭЦП","HMAC","Webhook"]},
   { "title": "Модульная расширяемая архитектура", "url": "./ModuleExtender.html", "tags": ["C++","Архитектура"]},
-  { "title": "Плагинная архитектура: загрузка и интерфейсы", "url": "./PlaginLoading.html", "tags": ["Plugins","ABI"]},
+  { "title": "Плагинная архитектура: загрузка и интерфейсы", "url": "./PlaginCore.html", "tags": ["Plugins","C++","ABI"]},
   { "title": "Tooling: ускорение сборки и диагностики", "url": "./Tooling.html", "tags": ["Tooling","CMake"]}
 ]
