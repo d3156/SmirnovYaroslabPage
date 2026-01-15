@@ -14,15 +14,20 @@
   <style> </style>
 </head>
 <script defer src="../assets/js/articles.js"></script>
+<script defer src="../assets/js/rotating-title.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
 <script>hljs.highlightAll();</script>
+
 <body>
   <div class="nav">
     <div class="wrap">
       <div class="row">
         <div class="brand">
-          <div class="logo" aria-hidden="true"></div>
-          <div>Смирнов Ярослав</div>
+          <span id="logo-slot"></span>
+          <span class="console-logo" aria-label="console logo">
+            <span class="chev">&gt;</span><span class="cursor">_</span>
+          </span>
+          <div id="rotating" class="wipe"></div>
         </div>
         <nav class="menu" aria-label="Навигация статьи">
           <a class="chip" href="../index.html">← На главную</a>

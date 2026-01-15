@@ -414,45 +414,10 @@
         </div>
     </footer>
     <script>
-        const texts = [
-            "Короткий код — лучший код",
-            "Больше строк — больше багов",
-            "Shorter code, better code",
-            "Fewer lines, fewer bugs"
-        ];
-
-        const el = document.getElementById("rotating");
-        let i = 0;
-
-        // стартовое состояние
-        el.textContent = texts[i];
-        el.classList.add("is-shown");
-
-        const SHOW_MS = 10000;   // сколько держим показанным
-        const WIPE_MS = 600;    // должно совпадать с transition
-
-        function next() {
-            // 1) "закрыть" (слева направо не видно, т.к. справа 100%)
-            el.classList.remove("is-shown");
-            el.classList.add("is-hidden");
-
-            // 2) когда закрыли — поменять текст и "открыть" слева направо
-            setTimeout(() => {
-                i = (i + 1) % texts.length;
-                el.textContent = texts[i];
-
-                // Переключаем на shown, чтобы анимация пошла
-                el.classList.remove("is-hidden");
-                el.classList.add("is-shown");
-            }, WIPE_MS);
-        }
-        next();
-        setInterval(next, SHOW_MS + WIPE_MS * 2);
-    </script>
-    <script>
         const email = "d3156@mail.ru";
         document.getElementById("y").textContent = new Date().getFullYear();
     </script>
+    <script defer src="./assets/js/rotating-title.js"></script>
 </body>
 
 </html>

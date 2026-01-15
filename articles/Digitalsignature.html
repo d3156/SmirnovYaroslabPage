@@ -10,18 +10,24 @@
     <meta name="theme-color" content="#0b1220" />
     <link rel="stylesheet" href="./../assets/css/base.css">
     <link rel="stylesheet" href="./../assets/css/articles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
 </head>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
 <script defer src="../assets/js/articles.js"></script>
+<script defer src="../assets/js/rotating-title.js"></script>
 <script>hljs.highlightAll();</script>
+
 <body>
     <div class="nav">
         <div class="wrap">
             <div class="row">
                 <div class="brand">
-                    <div class="logo" aria-hidden="true"></div>
-                    <div>Смирнов Ярослав</div>
+                    <span id="logo-slot"></span>
+                    <span class="console-logo" aria-label="console logo">
+                        <span class="chev">&gt;</span><span class="cursor">_</span>
+                    </span>
+                    <div id="rotating" class="wipe"></div>
                 </div>
                 <nav class="menu" aria-label="Навигация статьи">
                     <a class="chip" href="../index.html">← На главную</a>
@@ -174,7 +180,8 @@ signature = HMAC_SHA256( implode("|", data_values), api_key )</code></pre>
             <ul class="list">
                 <li><b>Для подписи запросов:</b> использовать HMAC-SHA256/512 с криптографически случайным секретом
                     достаточной длины (не “короткий int/32-bit”, не “пароль”).</li>
-                <li><b>Для детерминированной сериализации:</b> подписывать пары <span class="mono">key=value</span>, а не только
+                <li><b>Для детерминированной сериализации:</b> подписывать пары <span class="mono">key=value</span>, а
+                    не только
                     значения, и однозначно определять кодировку/escape, чтобы исключить неоднозначности.</li>
                 <li><b>Для webhook:</b> проверять не только подпись, но и “свежесть” события (nonce/временная метка),
                     защищаться от повтора, сверять сумму/валюту/ID заказа и статус.</li>
@@ -226,4 +233,5 @@ signature = HMAC_SHA256( implode("|", data_values), api_key )</code></pre>
         document.getElementById("y").textContent = new Date().getFullYear();
     </script>
 </body>
+
 </html>
