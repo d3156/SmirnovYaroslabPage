@@ -5,8 +5,8 @@
   --bg0:#070b16;
   --bg1:#0b1220;
   --card:#0f1a33cc;
-  --text:#e9eefc;
-  --muted:#aab6da;
+  --text:#ffffff;
+  --muted:#dbdde6;
   --line:#24345f;
   --accent:#7c5cff;
   --accent2:#22d3ee;
@@ -246,4 +246,29 @@ footer{ padding:22px 0 30px; color:var(--muted); }
     border-radius: 999px;
     background: var(--good);
     box-shadow: 0 0 0 6px rgba(52, 211, 153, .12);
+}
+.wipe {
+  display: inline-block;
+  white-space: nowrap;
+  color:#63de00
+}
+
+/* Скрыто: видимая область "обрезана" почти до нуля (справа 100%) */
+.wipe.is-hidden {
+  clip-path: inset(0 100% 0 0);
+}
+
+/* Показано: обрезки нет */
+.wipe.is-shown {
+  clip-path: inset(0 0 0 0);
+}
+
+  /* Плавно анимируем изменение clip-path */
+.wipe {
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 600ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wipe { transition: none; }
 }

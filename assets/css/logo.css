@@ -1,0 +1,21 @@
+.console-logo{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+  color: #63de00;
+}
+.console-logo .chev{
+  display: inline-block;
+  animation: pulse 1.2s ease-in-out infinite;
+  transform-origin: 50% 60%;
+}
+.console-logo .cursor{
+  display: inline-block;
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+@keyframes pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.15);opacity:.85} }
+@media (prefers-reduced-motion: reduce){
+  .console-logo .chev, .console-logo .cursor { animation: none; }
+}

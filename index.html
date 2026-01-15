@@ -4,11 +4,12 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Смирнов Ярослав — Программист C++/Qt</title>
+    <title>>_ Смирнов Ярослав — Программист C++/Qt</title>
     <meta name="description"
         content="Смирнов Ярослав — программист C++ (C++20), Qt, Boost. Опыт разработки VoIP и системного ПО под Linux/Astra Linux." />
     <meta name="theme-color" content="#0b1220" />
     <link rel="stylesheet" href="./assets/css/base.css">
+    <link rel="stylesheet" href="./assets/css/logo.css">
     <style>
         /* было: width:350px; height:450px; */
         .avatar {
@@ -203,8 +204,11 @@
         <div class="wrap">
             <div class="row">
                 <div class="brand">
-                    <div class="logo" aria-hidden="true"></div>
-                    <div>Смирнов Ярослав</div>
+                    <span id="logo-slot"></span>
+                    <span class="console-logo" aria-label="console logo">
+                      <span class="chev">&gt;</span><span class="cursor">_</span>
+                    </span>
+                    <div id="rotating" class="wipe"></div>
                 </div>
                 <nav class="menu" aria-label="Навигация">
                     <a class="chip" href="#about">Обо мне</a>
@@ -403,17 +407,48 @@
 
     <footer class="wrap" itemscope itemtype="https://schema.org/Person">
         <div class="foot">
-            <div>
-                <div class="mono">© <span id="y"></span> <span itemprop="name">Смирнов Ярослав</span></div>
-                <div class="mono" style="margin-top:6px;">Email: <a itemprop="email"
-                        href="mailto:d3156@mail.ru">d3156@mail.ru</a></div>
-            </div>
+            <div class="mono">© <span id="y"></span> <span itemprop="name">Смирнов Ярослав, Санкт‑Петербург</span></div>
             <div class="mono">
                 <a class="chip" href="#top">Наверх</a>
             </div>
         </div>
     </footer>
+    <script>
+        const texts = [
+            "Короткий код — лучший код",
+            "Больше строк — больше багов",
+            "Shorter code, better code",
+            "Fewer lines, fewer bugs"
+        ];
 
+        const el = document.getElementById("rotating");
+        let i = 0;
+
+        // стартовое состояние
+        el.textContent = texts[i];
+        el.classList.add("is-shown");
+
+        const SHOW_MS = 10000;   // сколько держим показанным
+        const WIPE_MS = 600;    // должно совпадать с transition
+
+        function next() {
+            // 1) "закрыть" (слева направо не видно, т.к. справа 100%)
+            el.classList.remove("is-shown");
+            el.classList.add("is-hidden");
+
+            // 2) когда закрыли — поменять текст и "открыть" слева направо
+            setTimeout(() => {
+                i = (i + 1) % texts.length;
+                el.textContent = texts[i];
+
+                // Переключаем на shown, чтобы анимация пошла
+                el.classList.remove("is-hidden");
+                el.classList.add("is-shown");
+            }, WIPE_MS);
+        }
+        next();
+        setInterval(next, SHOW_MS + WIPE_MS * 2);
+    </script>
     <script>
         const email = "d3156@mail.ru";
         document.getElementById("y").textContent = new Date().getFullYear();
