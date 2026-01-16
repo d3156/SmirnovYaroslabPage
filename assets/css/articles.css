@@ -78,26 +78,30 @@ code {
   gap: 14px;
 }
 
-.icon{
+.nav-home .icon{
   width: 18px;
   height: 18px;
-  display: block;
 }
 
 @media (min-width: 860px) {
   .more-articles {
     grid-template-columns: 1fr 1fr;
   }
+}
+
+/* Мобильный режим: оставляем только кнопку "домой" и делаем её маленькой */
+@media (max-width: 860px){
   .article-nav .chip{ display:none; }
   .article-nav .nav-home{ display:inline-flex; }
-    /* Прячем текст — остаётся иконка */
+
   .nav-home-text{ display:none; }
 
-  /* Делаем кнопку компактнее */
-  .nav-home.icon-only{
-    padding: 9px 10px;
-    border-radius: 12px;
+  .nav-home{
+    padding: 8px 10px;     /* компактно */
+    border-radius: 12px;   /* без огромного круга */
     min-width: 40px;
+    height: 36px;          /* фикс высоты */
+    align-items: center;
     justify-content: center;
   }
 }
