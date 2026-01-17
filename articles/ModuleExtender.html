@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Модульная расширяемая архитектура</title>
+    <meta name="description"
+        content="Модульная расширяемая архитектура: минимальный интерфейс загрузки плагинов и моделей, модели как контейнер и интерфейс взаимодействия, паттерны many-to-many, many-to-one, one-to-many." />
+    <meta name="theme-color" content="#0b1220" />
+    <link rel="stylesheet" href="./../assets/css/base.css">
+    <link rel="stylesheet" href="./../assets/css/articles.css">
+    <link rel="stylesheet" href="./assets/css/logo.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+    <style> </style>
+</head>
+<script defer src="../assets/js/articles.js"></script>
+<script defer src="../assets/js/rotating-title.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+
+<body>
+    <div class="nav">
+        <div class="wrap">
+            <div class="row">
+                <div class="brand">
+                    <span id="logo-slot"></span>
+                    <span class="console-logo" aria-label="console logo">
+                        <span class="chev">&gt;</span><span class="cursor">_</span>
+                    </span>
+                    <div id="rotating" class="wipe"></div>
+                </div>
+                <nav class="menu article-nav" aria-label="Навигация статьи">
+                    <a class="chip nav-home icon-only" href="../index.html" aria-label="На главную">
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M20 12H4m0 0 6-6m-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <span class="nav-home-text">На главную</span>
+                    </a>
+
+                    <a class="chip" href="#intro">Введение</a>
+                    <a class="chip" href="#models">Модели</a>
+                    <a class="chip" href="#many-many">Many‑to‑many</a>
+                    <a class="chip" href="#many-one">Many‑to‑one</a>
+                    <a class="chip" href="#one-many">One‑to‑many</a>
+                    <a class="chip" href="#more">Другие статьи</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <header class="wrap" id="top">
+        <div class="card hero">
+            <div class="kicker"><span class="dot" aria-hidden="true"></span><span class="mono">Architecture • Modular
+                    design</span></div>
+            <h1>Модульная расширяемая архитектура</h1>
+
+            <p class="subtitle">
+                Практика проектирования приложений из плагинов и моделей так, чтобы его можно было расширять
+                динамически, избегая превращения кода в монолит. Такой подход помогает переиспользовать код, а найденные
+                ошибки и уязвимости исправлять сразу во всех приложениях, использующих модуль.
+            </p>
+
+            <div class="pillset" style="margin-top:14px;">
+                <span class="pill">Plugins</span>
+                <span class="pill">Модели</span>
+                <span class="pill">Many‑to‑many</span>
+                <span class="pill">Many‑to‑one</span>
+                <span class="pill">One‑to‑many</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="wrap">
+        <section class="card box" id="intro">
+            <div class="section-title">
+                <h2>Основные положения</h2>
+            </div>
+
+            <p class="intro-lead">
+                <strong>Интерфейс загрузки плагинов и моделей должен быть минимальным.</strong>
+            </p>
+
+            <dl class="defs">
+                <dt>Плагин может:</dt>
+                <dd>
+                    <li>Зарегистрировать свои модели.</li>
+                    <li>Получить чужие модели.</li>
+                    <li>Корректно завершить работу при запросе ядра.</li>
+                </dd>
+
+                <dt>Хост отвечает за:</dt>
+                <dd>
+                    <li>Поиск и загрузку модулей (плагинов).</li>
+                    <li>Порядок инициализации.</li>
+                    <li>Жизненный цикл моделей и модулей (плагинов).</li>
+                </dd>
+            </dl>
+
+            <p class="intro-note">
+                Вся функциональность, доступная другим модулям, публикуется через модели (динамические библиотеки).
+            </p>
+        </section>
+
+        <section class="card box" id="models">
+            <div class="section-title">
+                <h2>Модель — контейнер и интерфейс</h2>
+            </div>
+
+            <p class="intro-lead">
+                <strong>Модель</strong> — это одновременно контейнер и интерфейс взаимодействия.
+            </p>
+
+            <dl class="defs">
+                <dt>Контейнер</dt>
+                <dd>
+                    Модель может хранить общие (shared) данные, не являясь провайдером функциональности какого‑либо
+                    плагина.
+                </dd>
+
+                <dt>Интерфейс</dt>
+                <dd>
+                    Модель может быть провайдером функциональности и экспортировать методы одного или нескольких
+                    плагинов.
+                </dd>
+            </dl>
+
+            <ul class="list" style="margin-top:10px;">
+                <li>Плагины не общаются напрямую; они знают только имена и типы моделей.</li>
+                <li>Одна модель может агрегировать функциональность от нескольких модулей или выбирать активную
+                    реализацию.</li>
+                <li>Смена реализации не требует изменений у потребителей, если интерфейс модели стабилен.</li>
+            </ul>
+
+            <div class="callout" style="margin-top:12px;">
+                Модель становится “шиной” для плагинов: кто‑то публикует в неё возможности, кто‑то их потребляет. Сам
+                хост в этих деталях не участвует.
+            </div>
+        </section>
+
+
+        <section class="card box" id="many-many">
+            <div class="section-title">
+                <h2>Паттерн many‑to‑many</h2>
+            </div>
+
+            <p style="margin:0;">
+                Многие плагины могут получать функционал через одну модель от многих плагинов
+            </p>
+
+            <h3 style="margin:14px 0 6px;">Пример: InternalNetModel и транспорт</h3>
+            <ul class="list">
+                <li>"Бизнес"‑плагины работают только с <i>InternalNetModel</i>, не зная, какой
+                    транспорт реально используется.</li>
+                <li>Провайдеры транспорта подгружаются как плагины и регистрируют себя внутри модели.</li>
+                <li>Состав транспорта может динамически меняться: TLS, HTTPS, TCP, UDP — по набору доступных модулей.
+                </li>
+            </ul>
+
+            <pre><code class="language-plaintext">InternalNetModel &lt;--&gt; InternalNetHttpsPlugin
+InternalNetModel &lt;--&gt; InternalNetTlsPlugin
+InternalNetModel &lt;--&gt; InternalNetTcpPlugin
+InternalNetModel &lt;--&gt; InternalNetUdpPlugin</code></pre>
+
+            <div class="callout" style="margin-top:12px;">
+                Для плагинов бизнес‑логики доступен только унифицированный интерфейс межмодульного взаимодействия,
+                а транспорт выбирается за счёт набора загруженных модулей. Таким образом, транспорт не вшит монолитно в
+                приложение, в разных ситуациях может быть не просто отключен, а полностью убран без выпуска новой
+                версии, без доработок.
+            </div>
+
+            <h3 style="margin:14px 0 6px;">Пример: PayModel и платёжные системы</h3>
+            <ul class="list">
+                <li><span class="mono">PayModel</span> задаёт единый интерфейс “запрос пополнения счёта” и обработку
+                    статусов.</li>
+                <li>Каждый платёжный плагин регистрируется в <span class="mono">PayModel</span> и реализует конкретную
+                    интеграцию.</li>
+                <li>Расширение списка провайдеров не требует новой версии всего комплекса — достаточно добавить новый
+                    модуль.</li>
+            </ul>
+
+            <pre><code class="language-plaintext">PayModel &lt;--&gt; PayFreeKassaPlugin
+PayModel &lt;--&gt; PayYouMoneyPlugin
+PayModel &lt;--&gt; PayWataPlugin
+PayModel &lt;--&gt; Pay...Plugin</code></pre>
+
+            <div class="callout" style="margin-top:12px;">
+                Этот приём одинаково применим к транспорту, платёжным системам, хранилищам, провайдерам логов — везде,
+                где хочется иметь
+                единый интерфейс и наращивать реализации по мере необходимости.
+            </div>
+
+            <div style="margin-top:10px;">
+                <object data="../assets/diagrams/Many_many.svg" type="image/svg+xml" style="width:100%; display:block;
+               border-radius:16px; border:1px solid rgba(36,52,95,.85);">
+                </object>
+            </div>
+        </section>
+
+        <section class="card box" id="many-one">
+            <div class="section-title">
+                <h2>Паттерн many‑to‑one</h2>
+            </div>
+
+            <p style="margin:0;">
+                Модель также можеть быть интерфейсом единственного возможного плагина‑провайдера. Если
+                модуль не загрузился, модель сообщает об этом потребителям, а они сами решают, что делать дальше.
+            </p>
+
+            <h3 style="margin:14px 0 6px;">Пример: VirtualMachineManager</h3>
+            <ul class="list">
+                <li><span class="mono">VitualMachineManagerModel</span> описывает операции управления ВМ, общие для всех
+                    потребителей.</li>
+                <li>Реализация берётся из одного плагина: <span class="mono">VitualMachineManagerPlugin</span> или, при
+                    необходимости, из удалённой версии <span class="mono">ExternalVitualMachineManagerPlugin</span>.
+                </li>
+                <li>Одновременно может быть загружен только один плагин для реализации функционала
+                    VitualMachineManagerModel.
+                </li>
+                <li>Плагины‑потребители (панель, экспортёр метрик, онлайн‑сервис) завязаны только на модель и одинаково
+                    работают с локальной или удалённой реализацией.</li>
+            </ul>
+
+            <pre><code class="language-plaintext">VitualMachineManagerModel &lt;--&gt; VitualMachineManagerPlugin
+VitualMachineManagerModel &lt;--&gt; ExternalVitualMachineManagerPlugin</code></pre>
+
+            <div class="callout" style="margin-top:12px;">
+                Даже при схеме many‑to‑one код не превращается в монолит: реализацию можно заменить
+                (локальная/удалённая, другая версия),
+                не трогая потребителей. Главное — сохранить интерфейс модели.
+            </div>
+
+            <div style="margin-top:10px;">
+                <object data="../assets/diagrams/Many_one.svg" type="image/svg+xml" style="width:100%; display:block;
+               border-radius:16px; border:1px solid rgba(36,52,95,.85);">
+                </object>
+
+            </div>
+        </section>
+
+        <section class="card box" id="one-many">
+            <div class="section-title">
+                <h2>Паттерн one‑to‑many</h2>
+            </div>
+
+            <p style="margin:0;">
+                One‑to‑many — просто другая сторона предыдущих паттернов. Если модули спроектированы как независимые
+                провайдеры через модели,
+                можно брать готовый набор модулей и собирать вокруг него совершенно разные приложения.
+            </p>
+
+            <ul class="list" style="margin-top:10px;">
+                <li>Один и тот же комплект модулей (логирование, транспорт, платёжная модель, управление ВМ) можно
+                    переиспользовать в нескольких продуктах.</li>
+                <li>Различия между приложениями сводятся к конфигурации и наличию/отсутствию конкретных плагинов, а не к
+                    ответвлениям кода.</li>
+                <li>Такой подход особенно полезен в экосистемах: разные утилиты или сервисы собираются из одного “ящика
+                    с кубиками”.</li>
+            </ul>
+        </section>
+
+        <section class="card box" id="more">
+            <div class="section-title">
+                <h2>Другие статьи</h2>
+            </div>
+            <div id="more-articles" class="more-articles"></div>
+        </section>
+    </main>
+
+    <footer class="wrap">
+        <div class="foot">
+            <div class="mono">© <span id="y"></span> Смирнов Ярослав</div>
+            <div class="mono"><a class="chip" href="#top">Наверх</a></div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script defer src="../assets/js/articles.js"></script>
+    <script>document.getElementById("y").textContent = new Date().getFullYear();</script>
+</body>
+
+</html>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1452" height="560" viewBox="0 0 726 280">
+    <defs>
+        <filter id="s" x="-20%" y="-30%" width="140%" height="180%">
+            <feDropShadow dx="0" dy="16" stdDeviation="14" flood-color="#000" flood-opacity=".55"/>
+        </filter>
+        <radialGradient id="g1" cx="30%" cy="0%" r="70%">
+            <stop offset="0%" stop-color="rgba(124,92,255,.15)"/>
+            <stop offset="60%" stop-color="rgba(124,92,255,0)"/>
+        </radialGradient>
+        <radialGradient id="g2" cx="90%" cy="20%" r="70%">
+            <stop offset="0%" stop-color="rgba(34,211,238,.15)"/>
+            <stop offset="60%" stop-color="rgba(34,211,238,0)"/>
+        </radialGradient>
+        <radialGradient id="g3" cx="70%" cy="85%" r="75%">
+            <stop offset="0%" stop-color="rgba(52,211,153,.12)"/>
+            <stop offset="60%" stop-color="rgba(52,211,153,0)"/>
+        </radialGradient>
+
+    </defs>
+<rect x="0" y="0" width="726" height="280" rx="10" ry="10" fill="#070B16"/>
+<rect x="0" y="0" width="726" height="280" rx="10" ry="10" fill="url(#g1)"/>
+<rect x="0" y="0" width="726" height="280" rx="10" ry="10" fill="url(#g2)"/>
+<rect x="0" y="0" width="726" height="280" rx="10" ry="10" fill="url(#g3)"/>
+
+    <g font-family="ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial" font-size="14" fill="#F8FAFC">
+
+        <g filter="url(#s)">
+            <rect x="312" y="7" width="176" height="49.0679" rx="14" ry="14" fill="rgba(19,32,66,.92)" stroke="rgba(148,163,184,.55)" stroke-width="1.4"/>
+            <line x1="324" y1="18" x2="476" y2="18" stroke="#38BDF8" stroke-width="4" stroke-linecap="round"/>
+            <text x="327" y="41.9659">OnlineServicePlugin</text>
+        </g>
+
+        <g filter="url(#s)">
+            <rect x="347.5" y="116" width="105" height="49.0679" rx="14" ry="14" fill="rgba(19,32,66,.92)" stroke="rgba(148,163,184,.55)" stroke-width="1.4"/>
+            <line x1="359.5" y1="127" x2="440.5" y2="127" stroke="#34D399" stroke-width="4" stroke-linecap="round"/>
+            <text x="362.5" y="150.9659">PayModel</text>
+        </g>
+
+        <g filter="url(#s)">
+            <rect x="7" y="225" width="174" height="49.0679" rx="14" ry="14" fill="rgba(19,32,66,.92)" stroke="rgba(148,163,184,.55)" stroke-width="1.4"/>
+            <line x1="19" y1="236" x2="169" y2="236" stroke="#A78BFA" stroke-width="4" stroke-linecap="round"/>
+            <text x="22" y="259.9659">PayFreeKassaPlugin</text>
+        </g>
+
+        <g filter="url(#s)">
+            <rect x="216" y="225" width="176" height="49.0679" rx="14" ry="14" fill="rgba(19,32,66,.92)" stroke="rgba(148,163,184,.55)" stroke-width="1.4"/>
+            <line x1="228" y1="236" x2="380" y2="236" stroke="#22D3EE" stroke-width="4" stroke-linecap="round"/>
+            <text x="231" y="259.9659">PayYouMoneyPlugin</text>
+        </g>
+
+        <g filter="url(#s)">
+            <rect x="427" y="225" width="140" height="49.0679" rx="14" ry="14" fill="rgba(19,32,66,.92)" stroke="rgba(148,163,184,.55)" stroke-width="1.4"/>
+            <line x1="439" y1="236" x2="555" y2="236" stroke="#F97316" stroke-width="4" stroke-linecap="round"/>
+            <text x="442" y="259.9659">PayWataPlugin</text>
+        </g>
+
+        <g filter="url(#s)">
+            <rect x="602" y="225" width="118" height="49.0679" rx="14" ry="14" fill="rgba(19,32,66,.92)" stroke="rgba(148,163,184,.55)" stroke-width="1.4"/>
+            <line x1="614" y1="236" x2="708" y2="236" stroke="#FDE047" stroke-width="4" stroke-linecap="round"/>
+            <text x="617" y="259.9659">Pay...Plugin</text>
+        </g>
+
+        <g fill="none" stroke="rgba(226,232,240,.75)" stroke-width="1.8">
+            <path d="M400,62.25 C400,79.98 400,92.1 400,109.82"/>
+            <path d="M341.7364,161.8707 C290.2964,179.8607 223.0938,203.3597 167.0938,222.9397"/>
+            <path d="M374.6842,169.7169 C358.7842,187.4469 345.1457,202.633 329.2557,220.353"/>
+            <path d="M425.5594,169.6956 C441.6294,187.4256 455.4407,202.6542 471.5007,220.3742"/>
+            <path d="M458.0513,165.2966 C501.8213,183.2466 552.9684,204.2142 598.0484,222.6942"/>
+        </g>
+
+        <g fill="rgba(226,232,240,.95)" stroke="rgba(226,232,240,.95)" stroke-width="1">
+            <polygon points="400,56.25 396,65.25 400,61.25 404,65.25 400,56.25"/>
+            <polygon points="400,115.82 404,106.82 400,110.82 396,106.82 400,115.82"/>
+            <polygon points="347.4,159.89 337.5841,159.0853 342.6803,161.5406 340.225,166.6368 347.4,159.89"/>
+            <polygon points="161.43,224.92 171.2459,225.7254 166.1498,223.2697 168.6055,218.1737 161.43,224.92"/>
+            <polygon points="378.69,165.25 369.7033,169.2798 375.3518,168.9724 375.6592,174.6209 378.69,165.25"/>
+            <polygon points="325.25,224.82 334.2366,220.7899 328.5881,221.0975 328.2805,215.449 325.25,224.82"/>
+            <polygon points="421.53,165.25 424.6104,174.6048 424.8878,168.9547 430.5379,169.2322 421.53,165.25"/>
+            <polygon points="475.53,224.82 472.4499,215.4652 472.1723,221.1152 466.5222,220.8375 475.53,224.82"/>
+            <polygon points="452.5,163.02 459.3093,170.1358 457.1261,164.9172 462.3447,162.734 452.5,163.02"/>
+            <polygon points="603.6,224.97 596.7898,217.8552 598.9736,223.0735 593.7553,225.2574 603.6,224.97"/>
+        </g>
+
+    </g>
+</svg>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="651" height="280" viewBox="0 0 651 280">
+  <defs>
+    <filter id="s" x="-20%" y="-30%" width="140%" height="180%">
+      <feDropShadow dx="0" dy="16" stdDeviation="14" flood-color="#000" flood-opacity=".55"/>
+    </filter>
+
+    <radialGradient id="g1" cx="30%" cy="0%" r="70%">
+      <stop offset="0%" stop-color="rgba(124,92,255,.15)"/>
+      <stop offset="60%" stop-color="rgba(124,92,255,0)"/>
+    </radialGradient>
+    <radialGradient id="g2" cx="90%" cy="20%" r="70%">
+      <stop offset="0%" stop-color="rgba(34,211,238,.15)"/>
+      <stop offset="60%" stop-color="rgba(34,211,238,0)"/>
+    </radialGradient>
+    <radialGradient id="g3" cx="70%" cy="85%" r="75%">
+      <stop offset="0%" stop-color="rgba(52,211,153,.12)"/>
+      <stop offset="60%" stop-color="rgba(52,211,153,0)"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect x="0" y="0" width="651" height="280" rx="10" ry="10" fill="#070B16"/>
+  <rect x="0" y="0" width="651" height="280" rx="10" ry="10" fill="url(#g1)"/>
+  <rect x="0" y="0" width="651" height="280" rx="10" ry="10" fill="url(#g2)"/>
+  <rect x="0" y="0" width="651" height="280" rx="10" ry="10" fill="url(#g3)"/>
+
+  <g font-family="ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial"
+     font-size="14" fill="#F8FAFC">
+
+    <!-- Nodes -->
+    <g filter="url(#s)">
+      <rect x="7" y="7" width="176" height="49.0679" rx="14" ry="14"
+            fill="rgba(19,32,66,.92)" stroke="rgba(148,163,184,.55)" stroke-width="1.4"/>
+      <line x1="19" y1="18" x2="169" y2="18" stroke="#A78BFA" stroke-width="4" stroke-linecap="round"/>
+      <text x="22" y="41.9659">OnlineServicePlugin</text>
+    </g>
+
+    <g filter="url(#s)">
+      <rect x="218" y="7" width="190" height="49.0679" rx="14" ry="14"
+            fill="rgba(19,32,66,.92)" stroke="rgba(148,163,184,.55)" stroke-width="1.4"/>
+      <line x1="230" y1="18" x2="396" y2="18" stroke="#38BDF8" stroke-width="4" stroke-linecap="round"/>
+      <text x="233" y="41.9659">MetricsExporterPlugin</text>
+    </g>
+
+    <g filter="url(#s)">
+      <rect x="443" y="7" width="202" height="49.0679" rx="14" ry="14"
+            fill="rgba(19,32,66,.92)" stroke="rgba(148,163,184,.55)" stroke-width="1.4"/>
+      <line x1="455" y1="18" x2="633" y2="18" stroke="#22D3EE" stroke-width="4" stroke-linecap="round"/>
+      <text x="458" y="41.9659">VMManagerPanelPlugin</text>
+    </g>
+
+    <g filter="url(#s)">
+      <rect x="193.5" y="116" width="239" height="49.0679" rx="14" ry="14"
+            fill="rgba(19,32,66,.92)" stroke="rgba(148,163,184,.55)" stroke-width="1.4"/>
+      <line x1="205.5" y1="127" x2="420.5" y2="127" stroke="#34D399" stroke-width="4" stroke-linecap="round"/>
+      <text x="208.5" y="150.9659">VitualMachineManagerModel</text>
+    </g>
+
+    <g filter="url(#s)">
+      <rect x="193" y="225" width="240" height="49.0679" rx="14" ry="14"
+            fill="rgba(19,32,66,.92)" stroke="rgba(148,163,184,.55)" stroke-width="1.4"/>
+      <line x1="205" y1="236" x2="421" y2="236" stroke="#F97316" stroke-width="4" stroke-linecap="round"/>
+      <text x="208" y="259.9659">VitualMachineManagerPlugin</text>
+    </g>
+
+    <!-- Links -->
+    <g fill="none" stroke="rgba(226,232,240,.75)" stroke-width="1.8">
+      <path d="M148.496,58.754 C184.736,76.544 223.4142,95.5255 259.6242,113.3055"/>
+      <path d="M313,62.25 C313,79.98 313,92.1 313,109.82"/>
+      <path d="M487.5759,58.6322 C449.1759,76.4222 407.6639,95.6474 369.2939,113.4274"/>
+      <path d="M313,171.25 C313,188.98 313,201.1 313,218.82"/>
+    </g>
+
+    <!-- Arrowheads (matching your style) -->
+    <g fill="rgba(226,232,240,.95)" stroke="rgba(226,232,240,.95)" stroke-width="1">
+      <polygon points="143.11,56.11 149.4264,63.6667 147.5984,58.3133 152.9517,56.4853 143.11,56.11"/>
+      <polygon points="265.01,115.95 258.6944,108.3927 260.5219,113.7462 255.1683,115.5737 265.01,115.95"/>
+
+      <polygon points="313,56.25 309,65.25 313,61.25 317,65.25 313,56.25"/>
+      <polygon points="313,115.82 317,106.82 313,110.82 309,106.82 313,115.82"/>
+
+      <polygon points="493.02,56.11 483.1723,56.2638 488.4832,58.2118 486.5352,63.5227 493.02,56.11"/>
+      <polygon points="363.85,115.95 373.6976,115.7954 368.3866,113.8478 370.3341,108.5368 363.85,115.95"/>
+
+      <polygon points="313,165.25 309,174.25 313,170.25 317,174.25 313,165.25"/>
+      <polygon points="313,224.82 317,215.82 313,219.82 309,215.82 313,224.82"/>
+    </g>
+  </g>
+</svg>

@@ -118,3 +118,30 @@ code {
     white-space: nowrap;
   }
 }
+.intro-lead { margin: 10px 0 0; }
+
+.defs{
+  margin: 12px 0 0;
+}
+
+.defs dt,
+ .defs dd{
+  margin: 0;              /* важно: убрать браузерные отступы */
+}
+
+ .defs dt{
+  margin-top: 14px;
+  padding-left: 12px;
+  border-left: 3px solid rgba(148,163,184,.35);
+  color: rgba(248,250,252,.92);
+  font-weight: 700;
+  letter-spacing: .2px;
+}
+
+ .defs dd{
+  margin-top: 8px;
+  padding-left: 15px;     /* чуть правее линии заголовка */
+  color: rgba(248,250,252,.80);
+  line-height: 1.65;
+  max-width: 74ch;
+}
