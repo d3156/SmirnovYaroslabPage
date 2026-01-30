@@ -379,9 +379,9 @@
                 <div class="job">
                     <div class="jobhead">
                         <b>НЕОС — Инженер‑программист</b>
-                        <span>Июль 2025 — сейчас (7 месяцев)</span>
+                        <span id="tenure"></span>
                     </div>
-                    <p>Разработка ПО в области VoIP‑телефонии.</p>
+                    <p>Разработка ПО в области VoIP-телефонии.</p>
                 </div>
 
                 <div class="job">
@@ -429,6 +429,10 @@
     <script>
         const email = "d3156@mail.ru";
         document.getElementById("y").textContent = new Date().getFullYear();
+    </script>
+    <script>
+        function monthDiff(start, end) { return Math.max(0,(end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth()) + 1); }
+        document.getElementById('tenure').textContent = `Июль 2025 — сейчас (${monthDiff(new Date(2025, 6, 1), new Date())} месяцев)`;
     </script>
     <script defer src="./assets/js/rotating-title.js"></script>
 </body>
