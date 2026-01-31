@@ -1,5 +1,11 @@
-:root { --w: 980px; }
-header { padding: 22px 0 10px; }
+:root {
+  --w: 980px;
+}
+
+header {
+  padding: 22px 0 10px;
+}
+
 .hero {
   padding: 22px;
   position: relative;
@@ -14,10 +20,11 @@ header { padding: 22px 0 10px; }
     radial-gradient(700px 260px at 28% 0%, rgba(124, 92, 255, .28), transparent 60%),
     radial-gradient(520px 240px at 92% 22%, rgba(34, 211, 238, .20), transparent 62%),
     radial-gradient(520px 260px at 70% 92%, rgba(52, 211, 153, .10), transparent 65%);
-  pointer-events: none;
 }
 
-.hero>* { position: relative; }
+.hero>* {
+  position: relative;
+}
 
 h1 {
   margin: 14px 0 10px;
@@ -34,9 +41,13 @@ h1 {
   max-width: 74ch;
 }
 
-.box { padding: 18px; }
+.box {
+  padding: 18px;
+}
 
-.section-title { margin: 2px 0 10px; }
+.section-title {
+  margin: 2px 0 10px;
+}
 
 .callout {
   padding: 14px;
@@ -47,7 +58,9 @@ h1 {
   line-height: 1.65;
 }
 
-.callout b { color: var(--text); }
+.callout b {
+  color: var(--text);
+}
 
 pre {
   margin: 12px 0 0;
@@ -78,7 +91,7 @@ code {
   gap: 14px;
 }
 
-.nav-home .icon{
+.nav-home .icon {
   width: 18px;
   height: 18px;
   display: block;
@@ -90,19 +103,20 @@ code {
   }
 }
 
-.article-nav .nav-home{
+.article-nav .nav-home {
   display: inline-flex;
 }
-.article-nav .nav-home-text{
+
+.article-nav .nav-home-text {
   display: inline;
 }
 
-@media (max-width: 860px){
-  /* Шапка: бренд сверху, меню отдельной строкой */
-  .nav .row{ flex-wrap: wrap; }
+@media (max-width: 860px) {
+  .nav .row {
+    flex-wrap: wrap;
+  }
 
-  /* Меню статей — одной линией, со скроллом */
-  .article-nav{
+  .article-nav {
     flex: 1 1 100%;
     flex-wrap: nowrap;
     overflow-x: auto;
@@ -110,38 +124,39 @@ code {
     justify-content: flex-start;
     gap: 8px;
   }
-  .article-nav::-webkit-scrollbar{ height: 0; }
 
-  /* Кнопка домой не должна переноситься/сжиматься */
-  .article-nav .nav-home{
+  .article-nav::-webkit-scrollbar {
+    height: 0;
+  }
+
+  .article-nav .nav-home {
     flex: 0 0 auto;
     white-space: nowrap;
   }
 }
-.intro-lead { margin: 10px 0 0; }
 
-.defs{
+.defs {
   margin: 12px 0 0;
 }
 
 .defs dt,
- .defs dd{
-  margin: 0;              /* важно: убрать браузерные отступы */
+.defs dd {
+  margin: 0;
 }
 
- .defs dt{
+.defs dt {
   margin-top: 14px;
   padding-left: 12px;
-  border-left: 3px solid rgba(148,163,184,.35);
-  color: rgba(248,250,252,.92);
+  border-left: 3px solid rgba(148, 163, 184, .35);
+  color: rgba(248, 250, 252, .92);
   font-weight: 700;
   letter-spacing: .2px;
 }
 
- .defs dd{
+.defs dd {
   margin-top: 8px;
-  padding-left: 15px;     /* чуть правее линии заголовка */
-  color: rgba(248,250,252,.80);
+  padding-left: 15px;
+  color: rgba(248, 250, 252, .80);
   line-height: 1.65;
   max-width: 74ch;
 }

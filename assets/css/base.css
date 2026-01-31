@@ -1,6 +1,3 @@
-/* SmirnovYaroslabPage/assets/css/base.css */
-
-/* ===== Tokens ===== */
 :root {
   --bg0: #070b16;
   --bg1: #0b1220;
@@ -19,7 +16,6 @@
   --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Noto Sans", Arial, "Apple Color Emoji", "Segoe UI Emoji";
 }
 
-/* ===== Base / reset ===== */
 * {
   box-sizing: border-box;
 }
@@ -46,17 +42,11 @@ body {
   min-height: 100svh;
 }
 
-img {
-  max-width: 100%;
-  height: auto;
-}
-
 a {
   color: inherit;
   text-decoration: none;
 }
 
-/* ===== Layout helpers ===== */
 .wrap {
   width: min(var(--w), calc(100% - 40px));
   margin: 0 auto;
@@ -66,7 +56,6 @@ a {
   font-family: var(--mono);
 }
 
-/* ===== Nav ===== */
 .nav {
   position: sticky;
   top: 0;
@@ -112,39 +101,6 @@ a {
   justify-content: flex-end;
 }
 
-@media (max-width:520px) {
-  .menu {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    justify-content: flex-start;
-    gap: 8px;
-  }
-
-  .menu::-webkit-scrollbar {
-    height: 0;
-  }
-}
-
-@media (max-width: 860px) {
-  .nav .row {
-    gap: 10px;
-  }
-
-  .brand {
-    flex: 1 1 100%;
-    min-width: 0;
-    /* важно: разрешаем сжатие текста */
-  }
-
-  .menu {
-    flex: 1 1 100%;
-    justify-content: flex-start;
-  }
-}
-
-
-/* ===== UI chips ===== */
 .chip {
   padding: 9px 12px;
   border: 1px solid rgba(36, 52, 95, .9);
@@ -162,7 +118,6 @@ a {
   color: var(--text);
 }
 
-/* ===== Cards / sections ===== */
 .card {
   background: rgba(15, 26, 51, .55);
   border: 1px solid rgba(36, 52, 95, .85);
@@ -196,7 +151,6 @@ footer {
   padding-top: 16px;
 }
 
-/* ===== Typography blocks ===== */
 .section-title {
   display: flex;
   align-items: flex-end;
@@ -225,7 +179,6 @@ footer {
   line-height: 1.6;
 }
 
-/* ===== Pills / badges ===== */
 .pillset {
   display: flex;
   flex-wrap: wrap;
@@ -284,44 +237,6 @@ footer {
   border-color: rgba(255, 255, 255, .14);
 }
 
-/* “кнопки статей” */
-.pill-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 11px 14px;
-  border-radius: 15px;
-  background: rgba(124, 92, 255, .16);
-  border: 1px solid rgba(124, 92, 255, .55);
-  color: var(--text);
-  font-weight: 450;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, .22), 0 0 0 1px rgba(255, 255, 255, .06) inset;
-  cursor: pointer;
-  transition: transform .15s ease, border-color .15s ease, background .15s ease, box-shadow .15s ease;
-}
-
-.pill-btn::after {
-  content: "→";
-  font-family: var(--mono);
-  opacity: .85;
-}
-
-.pill-btn:hover {
-  transform: translateY(-1px);
-  background: rgba(124, 92, 255, .24);
-  border-color: rgba(34, 211, 238, .65);
-  box-shadow: 0 14px 30px rgba(0, 0, 0, .28), 0 0 0 1px rgba(255, 255, 255, .08) inset;
-}
-
-.pill-btn:active {
-  transform: translateY(0) scale(.99);
-}
-
-.pill-btn:focus-visible {
-  outline: 3px solid rgba(34, 211, 238, .55);
-  outline-offset: 3px;
-}
-
 .kicker {
   display: inline-flex;
   align-items: center;
@@ -341,6 +256,24 @@ footer {
   border-radius: 999px;
   background: var(--good);
   box-shadow: 0 0 0 6px rgba(52, 211, 153, .12);
+  animation: pulse 1.5s ease-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
 }
 
 .wipe {
@@ -349,17 +282,14 @@ footer {
   color: #63de00
 }
 
-/* Скрыто: видимая область "обрезана" почти до нуля (справа 100%) */
 .wipe.is-hidden {
   clip-path: inset(0 100% 0 0);
 }
 
-/* Показано: обрезки нет */
 .wipe.is-shown {
   clip-path: inset(0 0 0 0);
 }
 
-/* Плавно анимируем изменение clip-path */
 .wipe {
   clip-path: inset(0 0 0 0);
   transition: clip-path 600ms ease;
@@ -371,26 +301,32 @@ footer {
   }
 }
 
-.tg-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 18px;
-  border-radius: 14px;
-  background: #0088cc;
-  color: #fff;
-  text-decoration: none;
-  font-weight: 700;
-  box-shadow: 0 10px 25px rgba(0, 136, 204, .25);
+@media (max-width:520px) {
+  .menu {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .menu::-webkit-scrollbar {
+    height: 0;
+  }
 }
 
-.tg-btn:hover {
-  transform: translateY(-1px);
-}
+@media (max-width: 860px) {
+  .nav .row {
+    gap: 10px;
+  }
 
-.tg-btn__hint {
-  display: block;
-  font-size: 12px;
-  opacity: .9;
-  margin-top: 4px;
+  .brand {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .menu {
+    flex: 1 1 100%;
+    justify-content: flex-start;
+  }
 }
